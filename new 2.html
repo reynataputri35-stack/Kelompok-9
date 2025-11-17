@@ -1,0 +1,1819 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arabic Learning App</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #f3f4f6 100%);
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        .app-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6, #10b981);
+        }
+
+        .logo-section {
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 16px rgba(30, 58, 138, 0.3);
+        }
+
+        .logo svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        .app-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .app-subtitle {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .main-button {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .start-button {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+
+        .exit-button {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .exit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .group-label {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+
+        .placeholder-note {
+            font-size: 11px;
+            color: #9ca3af;
+            font-style: italic;
+            padding: 8px;
+            background: #f9fafb;
+            border-radius: 6px;
+            border-left: 3px solid #d1d5db;
+        }
+
+        .chapter-menu {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chapter-menu::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6, #10b981);
+        }
+
+        .chapter-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .chapter-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .chapter-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .chapter-card.ch1 { background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-color: #3b82f6; }
+        .chapter-card.ch2 { background: linear-gradient(135deg, #fef3c7, #fde68a); border-color: #f59e0b; }
+        .chapter-card.ch3 { background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-color: #10b981; }
+        .chapter-card.ch4 { background: linear-gradient(135deg, #e9d5ff, #ddd6fe); border-color: #8b5cf6; }
+        .chapter-card.ch5 { background: linear-gradient(135deg, #fce7f3, #fbcfe8); border-color: #ec4899; }
+        .chapter-card.ch6 { background: linear-gradient(135deg, #fed7aa, #fdba74); border-color: #f97316; }
+        .chapter-card.ch7 { background: linear-gradient(135deg, #f3f4f6, #e5e7eb); border-color: #6b7280; }
+
+        .chapter-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .chapter-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .chapter-placeholder {
+            font-size: 10px;
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button {
+            background: #6b7280;
+            color: white;
+        }
+
+        .back-button:hover {
+            background: #4b5563;
+        }
+
+        .guide-button {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .guide-button:hover {
+            background: #2563eb;
+        }
+
+        .chapter-content {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chapter-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #dbeafe, #bfdbfe, #3b82f6);
+        }
+
+        .chapter-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .chapter-main-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .chapter-subtitle {
+            font-size: 18px;
+            color: #64748b;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .chapter-note-space {
+            margin-top: 15px;
+        }
+
+        .content-sections {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .content-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #3b82f6;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .vocabulary-card { border-left-color: #10b981; }
+        .material-card { border-left-color: #3b82f6; }
+        .conversation-card { border-left-color: #f59e0b; }
+        .exercise-card { border-left-color: #ef4444; }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .card-content {
+            color: #4b5563;
+        }
+
+        .placeholder-content p {
+            font-style: italic;
+            color: #9ca3af;
+            margin-bottom: 15px;
+        }
+
+        .content-placeholder {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .placeholder-box {
+            background: #e5e7eb;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #6b7280;
+            border: 1px dashed #d1d5db;
+        }
+
+        .placeholder-text-block {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            color: #6b7280;
+            border: 1px dashed #d1d5db;
+        }
+
+        .conversation-illustration {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .person-icon {
+            font-size: 32px;
+        }
+
+        .conversation-bubble {
+            background: #dbeafe;
+            padding: 10px 15px;
+            border-radius: 15px;
+            color: #1e40af;
+            font-weight: 500;
+            margin: 5px 0;
+        }
+
+        .exercise-placeholder {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .exercise-item {
+            background: #fef3c7;
+            padding: 12px;
+            border-radius: 6px;
+            color: #92400e;
+            border: 1px dashed #fbbf24;
+        }
+
+        .audio-card { border-left-color: #10b981; }
+
+        .audio-player-placeholder {
+            background: #f0fdf4;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px dashed #10b981;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .audio-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .audio-btn:hover {
+            background: #059669;
+            transform: scale(1.05);
+        }
+
+        .audio-progress {
+            flex: 1;
+            height: 6px;
+            background: #d1fae5;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 30%;
+            height: 100%;
+            background: #10b981;
+            border-radius: 3px;
+        }
+
+        .audio-description {
+            font-size: 14px;
+            color: #059669;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .chapter-navigation {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .back-to-chapters {
+            background: #6b7280;
+            color: white;
+        }
+
+        .back-to-chapters:hover {
+            background: #4b5563;
+        }
+
+        .back-to-main {
+            background: #1e3a8a;
+            color: white;
+        }
+
+        .back-to-main:hover {
+            background: #1e40af;
+        }
+
+        .chapter-footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .footer-note {
+            font-size: 12px;
+            color: #6b7280;
+            font-style: italic;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 6px;
+            border-left: 3px solid #d1d5db;
+        }
+
+        .link-placeholder {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .link-box {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            border: 2px dashed #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .link-box:hover {
+            background: #e2e8f0;
+            border-color: #94a3b8;
+            transform: translateY(-2px);
+        }
+
+        .link-icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .link-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .link-description {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 480px) {
+            .app-container, .chapter-menu, .chapter-content {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+            
+            .app-title {
+                font-size: 24px;
+            }
+            
+            .chapter-main-title {
+                font-size: 28px;
+            }
+            
+            .chapters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chapter-navigation {
+                flex-direction: column;
+            }
+
+            .content-placeholder {
+                flex-direction: column;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <main>
+   <div class="app-container" id="mainMenu">
+    <div class="logo-section">
+     <div class="logo">
+      <svg viewbox="0 0 24 24"><path d="M12 2L2 7V10C2 16 6 20.5 12 22C18 20.5 22 16 22 10V7L12 2M11 7H13V9H16V11H13V13H11V11H8V9H11V7Z" />
+      </svg>
+     </div>
+    </div>
+    <h1 class="app-title" id="appTitleArabic">تعلم العربية بسهولة</h1>
+    <p class="app-subtitle" id="appTitleIndonesian">Belajar Bahasa Arab dengan Mudah</p>
+    <div class="button-container"><button class="main-button start-button" id="startButton"> <span>▶️</span> <span id="startButtonText">Mulai Belajar</span> </button> <button class="main-button exit-button" id="exitButton"> <span>❌</span> <span id="exitButtonText">Keluar</span> </button>
+    </div>
+    <div class="group-label" id="groupText">
+     Kelompok 9
+    </div>
+    <div class="footer-text" id="footerText">
+     Didesain untuk pembelajaran Bahasa Arab interaktif MA.
+    </div>
+    <div class="placeholder-note">
+     (Placeholder — dapat diisi manual di Notepad++.)
+    </div>
+   </div>
+   <div class="chapter-menu" id="chapterMenu">
+    <h2 class="chapter-title">Pilih Bab Pembelajaran</h2>
+    <div class="chapters-grid">
+     <div class="chapter-card ch1" onclick="showChapter1()">
+      <div class="chapter-icon">
+       👋
+      </div>
+      <div class="chapter-name">
+       التعارف
+      </div>
+      <div class="chapter-placeholder">
+       (Placeholder — link ke bab diisi manual di Notepad++.)
+      </div>
+     </div>
+     <div class="chapter-card ch2" onclick="showChapter2()">
+      <div class="chapter-icon">
+       🏠
+      </div>
+      <div class="chapter-name">
+       الأسرة والبيت
+      </div>
+      <div class="chapter-placeholder">
+       (Placeholder — link ke bab diisi manual di Notepad++.)
+      </div>
+     </div>
+     <div class="chapter-card ch3" onclick="showChapter3()">
+      <div class="chapter-icon">
+       🏫
+      </div>
+      <div class="chapter-name">
+       المدرسة
+      </div>
+      <div class="chapter-placeholder">
+       (Placeholder — link ke bab diisi manual di Notepad++.)
+      </div>
+     </div>
+     <div class="chapter-card ch4" onclick="showChapter4()">
+      <div class="chapter-icon">
+       🌅
+      </div>
+      <div class="chapter-name">
+       الحياة اليومية
+      </div>
+      <div class="chapter-placeholder">
+       (Placeholder — link ke bab diisi manual di Notepad++.)
+      </div>
+     </div>
+     <div class="chapter-card ch5" onclick="showChapter5()">
+      <div class="chapter-icon">
+       🎨
+      </div>
+      <div class="chapter-name">
+       الهوايات
+      </div>
+      <div class="chapter-placeholder">
+       (Placeholder — link ke bab diisi manual di Notepad++.)
+      </div>
+     </div>
+     <div class="chapter-card ch6" onclick="showChapter6()">
+      <div class="chapter-icon">
+       🍽️
+      </div>
+      <div class="chapter-name">
+       الطعام والشراب
+      </div>
+      <div class="chapter-placeholder">
+       (Placeholder — link ke bab diisi manual di Notepad++.)
+      </div>
+     </div>
+     <div class="chapter-card ch7" onclick="showChapter7()">
+      <div class="chapter-icon">
+       📝
+      </div>
+      <div class="chapter-name">
+       الامتحان
+      </div>
+      <div class="chapter-placeholder">
+       (Placeholder — link ke bab diisi manual di Notepad++.)
+      </div>
+     </div>
+    </div>
+    <div class="navigation-buttons"><button class="nav-button back-button" id="backButton"> <span>⬅️</span> <span>Kembali ke Main Menu</span> </button> <button class="nav-button guide-button"> <span>📖</span> <span>Panduan Belajar</span> </button>
+    </div>
+    <div class="group-label" style="margin-top: 20px;">
+     Kelompok 9
+    </div>
+    <div class="placeholder-note" style="margin-top: 15px;">
+     Semua konten akan diisi manual di Notepad++.
+    </div>
+   </div>
+   <div class="chapter-content" id="chapter1">
+    <div class="chapter-header">
+     <h1 class="chapter-main-title">باب ١ – التعارف</h1>
+     <p class="chapter-subtitle">Bab 1 – Perkenalan</p>
+     <div class="chapter-note-space">
+      <div class="placeholder-note">
+       (Ruang untuk catatan digital tambahan)
+      </div>
+     </div>
+    </div>
+    <div class="content-sections">
+     <div class="content-card vocabulary-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📚
+       </div>
+       <h3 class="card-title">Mufrodat (Kosakata)</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Isi mufrodat akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-box">
+          Kosakata 1
+         </div>
+         <div class="placeholder-box">
+          Kosakata 2
+         </div>
+         <div class="placeholder-box">
+          Kosakata 3
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card material-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📖
+       </div>
+       <h3 class="card-title">Materi</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Materi utama akan ditambahkan manual.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-text-block">
+          Penjelasan materi perkenalan...
+         </div>
+         <div class="placeholder-text-block">
+          Contoh penggunaan...
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card conversation-card">
+      <div class="card-header">
+       <div class="card-icon">
+        💬
+       </div>
+       <h3 class="card-title">Hiwar (Percakapan)</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Hiwar contoh akan ditambahkan manual.)</p>
+        <div class="conversation-illustration">
+         <div class="person-icon">
+          👤
+         </div>
+         <div class="conversation-bubble">
+          السلام عليكم
+         </div>
+         <div class="person-icon">
+          👤
+         </div>
+         <div class="conversation-bubble">
+          وعليكم السلام
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card exercise-card">
+      <div class="card-header">
+       <div class="card-icon">
+        ✏️
+       </div>
+       <h3 class="card-title">Tamrin (Latihan)</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Soal latihan akan ditambahkan manual.)</p>
+        <div class="exercise-placeholder">
+         <div class="exercise-item">
+          Latihan 1: ___________
+         </div>
+         <div class="exercise-item">
+          Latihan 2: ___________
+         </div>
+         <div class="exercise-item">
+          Latihan 3: ___________
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="chapter-navigation"><button class="nav-button back-to-chapters" onclick="backToChapters()"> <span>⬅️</span> <span>Kembali ke Menu Bab</span> </button> <button class="nav-button back-to-main" onclick="backToMain()"> <span>🏠</span> <span>Kembali ke Main Menu</span> </button>
+    </div>
+    <div class="chapter-footer">
+     <div class="group-label">
+      Kelompok 9
+     </div>
+     <div class="footer-note">
+      Semua konten Bab 1 akan diisi manual melalui Notepad++.
+     </div>
+    </div>
+   </div>
+   <div class="chapter-content" id="chapter2">
+    <div class="chapter-header">
+     <h1 class="chapter-main-title">باب ٢ – الأسرة والبيت</h1>
+     <p class="chapter-subtitle">Bab 2 – Keluarga dan Rumah</p>
+     <div class="chapter-note-space">
+      <div class="placeholder-note">
+       (Ruang untuk catatan digital tambahan)
+      </div>
+     </div>
+    </div>
+    <div class="content-sections">
+     <div class="content-card vocabulary-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📚
+       </div>
+       <h3 class="card-title">Mufrodat (Kosakata)</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Isi mufrodat akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-box">
+          أب (Ayah)
+         </div>
+         <div class="placeholder-box">
+          أم (Ibu)
+         </div>
+         <div class="placeholder-box">
+          بيت (Rumah)
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card material-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📖
+       </div>
+       <h3 class="card-title">Materi Ringkas</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Materi utama akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-text-block">
+          Penjelasan tentang keluarga...
+         </div>
+         <div class="placeholder-text-block">
+          Struktur rumah dalam bahasa Arab...
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card audio-card">
+      <div class="card-header">
+       <div class="card-icon">
+        🎵
+       </div>
+       <h3 class="card-title">Audio Pembelajaran</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(File audio akan dimasukkan manual di Notepad++.)</p>
+        <div class="audio-player-placeholder">
+         <div class="audio-controls"><button class="audio-btn">◉</button> <button class="audio-btn">▶️</button>
+          <div class="audio-progress">
+           <div class="progress-bar"></div>
+          </div>
+         </div>
+         <p class="audio-description">Audio pelafalan kosakata keluarga dan rumah</p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="chapter-navigation"><button class="nav-button back-to-chapters" onclick="backToChapters2()"> <span>⬅️</span> <span>Kembali ke Menu Bab</span> </button> <button class="nav-button back-to-main" onclick="backToMain2()"> <span>🏠</span> <span>Kembali ke Main Menu</span> </button>
+    </div>
+    <div class="chapter-footer">
+     <div class="group-label">
+      Kelompok 9
+     </div>
+     <div class="footer-note">
+      Semua konten (Mufrodat, Materi, Audio) akan diisi manual.
+     </div>
+    </div>
+   </div>
+   <div class="chapter-content" id="chapter3">
+    <div class="chapter-header">
+     <h1 class="chapter-main-title">باب ٣ – المدرسة</h1>
+     <p class="chapter-subtitle">Bab 3 – Sekolah</p>
+     <div class="chapter-note-space">
+      <div class="placeholder-note">
+       (Ruang untuk catatan digital tambahan)
+      </div>
+     </div>
+    </div>
+    <div class="content-sections">
+     <div class="content-card vocabulary-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📚
+       </div>
+       <h3 class="card-title">Mufrodat (Kosakata)</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Isi mufrodat akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-box">
+          مدرسة (Sekolah)
+         </div>
+         <div class="placeholder-box">
+          معلم (Guru)
+         </div>
+         <div class="placeholder-box">
+          طالب (Siswa)
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card material-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📖
+       </div>
+       <h3 class="card-title">Materi Bacaan</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Materi bacaan akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-text-block">
+          Teks bacaan tentang sekolah...
+         </div>
+         <div class="placeholder-text-block">
+          Aktivitas di sekolah...
+         </div>
+         <div class="placeholder-text-block">
+          Fasilitas sekolah...
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card exercise-card">
+      <div class="card-header">
+       <div class="card-icon">
+        ✏️
+       </div>
+       <h3 class="card-title">Latihan Soal (Tamrin)</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Soal latihan akan ditambahkan manual di Notepad++.)</p>
+        <div class="exercise-placeholder">
+         <div class="exercise-item">
+          Soal 1: ___________
+         </div>
+         <div class="exercise-item">
+          Soal 2: ___________
+         </div>
+         <div class="exercise-item">
+          Soal 3: ___________
+         </div>
+         <div class="exercise-item">
+          Soal 4: ___________
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="chapter-navigation"><button class="nav-button back-to-chapters" onclick="backToChapters3()"> <span>⬅️</span> <span>Kembali ke Menu Bab</span> </button> <button class="nav-button back-to-main" onclick="backToMain3()"> <span>🏠</span> <span>Kembali ke Main Menu</span> </button>
+    </div>
+    <div class="chapter-footer">
+     <div class="group-label">
+      Kelompok 9
+     </div>
+     <div class="footer-note">
+      Semua konten (Mufrodat, Materi Bacaan, Latihan Soal) akan diisi manual.
+     </div>
+    </div>
+   </div>
+   <div class="chapter-content" id="chapter4">
+    <div class="chapter-header">
+     <h1 class="chapter-main-title">باب ٤ – الحياة اليومية</h1>
+     <p class="chapter-subtitle">Bab 4 – Kehidupan Sehari-hari</p>
+     <div class="chapter-note-space">
+      <div class="placeholder-note">
+       (Ruang untuk catatan digital tambahan)
+      </div>
+     </div>
+    </div>
+    <div class="content-sections">
+     <div class="content-card vocabulary-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📚
+       </div>
+       <h3 class="card-title">Mufrodat (Kosakata)</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Isi mufrodat akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-box">
+          يوم (Hari)
+         </div>
+         <div class="placeholder-box">
+          صباح (Pagi)
+         </div>
+         <div class="placeholder-box">
+          مساء (Sore)
+         </div>
+         <div class="placeholder-box">
+          نوم (Tidur)
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card material-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📖
+       </div>
+       <h3 class="card-title">Materi Ringkas</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Materi utama akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-text-block">
+          Aktivitas pagi hari...
+         </div>
+         <div class="placeholder-text-block">
+          Rutinitas harian...
+         </div>
+         <div class="placeholder-text-block">
+          Waktu dan jadwal...
+         </div>
+         <div class="placeholder-text-block">
+          Kegiatan malam hari...
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card audio-card">
+      <div class="card-header">
+       <div class="card-icon">
+        🎵
+       </div>
+       <h3 class="card-title">Audio Pembelajaran</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(File audio akan dimasukkan manual di Notepad++.)</p>
+        <div class="audio-player-placeholder">
+         <div class="audio-controls"><button class="audio-btn">◉</button> <button class="audio-btn">▶️</button>
+          <div class="audio-progress">
+           <div class="progress-bar"></div>
+          </div>
+         </div>
+         <p class="audio-description">Audio pelafalan aktivitas kehidupan sehari-hari</p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="chapter-navigation"><button class="nav-button back-to-chapters" onclick="backToChapters4()"> <span>⬅️</span> <span>Kembali ke Menu Bab</span> </button> <button class="nav-button back-to-main" onclick="backToMain4()"> <span>🏠</span> <span>Kembali ke Main Menu</span> </button>
+    </div>
+    <div class="chapter-footer">
+     <div class="group-label">
+      Kelompok 9
+     </div>
+     <div class="footer-note">
+      Semua konten (Mufrodat, Materi, Audio) akan diisi manual.
+     </div>
+    </div>
+   </div>
+   <div class="chapter-content" id="chapter5">
+    <div class="chapter-header">
+     <h1 class="chapter-main-title">باب ٥ – الهوايات</h1>
+     <p class="chapter-subtitle">Bab 5 – Hobi</p>
+     <div class="chapter-note-space">
+      <div class="placeholder-note">
+       (Ruang untuk catatan digital tambahan)
+      </div>
+     </div>
+    </div>
+    <div class="content-sections">
+     <div class="content-card vocabulary-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📚
+       </div>
+       <h3 class="card-title">Mufrodat (Kosakata)</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Isi mufrodat akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-box">
+          هواية (Hobi)
+         </div>
+         <div class="placeholder-box">
+          قراءة (Membaca)
+         </div>
+         <div class="placeholder-box">
+          رياضة (Olahraga)
+         </div>
+         <div class="placeholder-box">
+          موسيقى (Musik)
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card material-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📖
+       </div>
+       <h3 class="card-title">Materi Ringkas</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Materi utama akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-text-block">
+          Jenis-jenis hobi...
+         </div>
+         <div class="placeholder-text-block">
+          Aktivitas seni dan budaya...
+         </div>
+         <div class="placeholder-text-block">
+          Olahraga dan permainan...
+         </div>
+         <div class="placeholder-text-block">
+          Hobi kreatif...
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card audio-card">
+      <div class="card-header">
+       <div class="card-icon">
+        🎵
+       </div>
+       <h3 class="card-title">Audio Pembelajaran</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(File audio akan dimasukkan manual di Notepad++.)</p>
+        <div class="audio-player-placeholder">
+         <div class="audio-controls"><button class="audio-btn">◉</button> <button class="audio-btn">▶️</button>
+          <div class="audio-progress">
+           <div class="progress-bar"></div>
+          </div>
+         </div>
+         <p class="audio-description">Audio pelafalan kosakata hobi dan aktivitas</p>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card conversation-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📚
+       </div>
+       <h3 class="card-title">Materi Bacaan</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Materi bacaan akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-text-block">
+          Teks bacaan tentang hobi...
+         </div>
+         <div class="placeholder-text-block">
+          Cerita aktivitas favorit...
+         </div>
+         <div class="placeholder-text-block">
+          Manfaat memiliki hobi...
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card exercise-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📝
+       </div>
+       <h3 class="card-title">Qowaid (Tata Bahasa)</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Materi qowaid akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-text-block">
+          Struktur kalimat tentang hobi...
+         </div>
+         <div class="placeholder-text-block">
+          Penggunaan kata kerja aktivitas...
+         </div>
+         <div class="placeholder-text-block">
+          Pola kalimat preferensi...
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="chapter-navigation"><button class="nav-button back-to-chapters" onclick="backToChapters5()"> <span>⬅️</span> <span>Kembali ke Menu Bab</span> </button> <button class="nav-button back-to-main" onclick="backToMain5()"> <span>🏠</span> <span>Kembali ke Main Menu</span> </button>
+    </div>
+    <div class="chapter-footer">
+     <div class="group-label">
+      Kelompok 9
+     </div>
+     <div class="footer-note">
+      Semua konten (Mufrodat, Materi, Audio, Materi Bacaan, Qowaid) akan diisi manual.
+     </div>
+    </div>
+   </div>
+   <div class="chapter-content" id="chapter6">
+    <div class="chapter-header">
+     <h1 class="chapter-main-title">باب ٦ – الطعام والشراب</h1>
+     <p class="chapter-subtitle">Bab 6 – Makanan dan Minuman</p>
+     <div class="chapter-note-space">
+      <div class="placeholder-note">
+       (Ruang untuk catatan digital tambahan)
+      </div>
+     </div>
+    </div>
+    <div class="content-sections">
+     <div class="content-card vocabulary-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📚
+       </div>
+       <h3 class="card-title">Mufrodat (Kosakata)</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Isi mufrodat akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-box">
+          طعام (Makanan)
+         </div>
+         <div class="placeholder-box">
+          شراب (Minuman)
+         </div>
+         <div class="placeholder-box">
+          أرز (Nasi)
+         </div>
+         <div class="placeholder-box">
+          ماء (Air)
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card audio-card">
+      <div class="card-header">
+       <div class="card-icon">
+        🎵
+       </div>
+       <h3 class="card-title">Audio Pembelajaran</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(File audio akan dimasukkan manual di Notepad++.)</p>
+        <div class="audio-player-placeholder">
+         <div class="audio-controls"><button class="audio-btn">◉</button> <button class="audio-btn">▶️</button>
+          <div class="audio-progress">
+           <div class="progress-bar"></div>
+          </div>
+         </div>
+         <p class="audio-description">Audio pelafalan kosakata makanan dan minuman</p>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card conversation-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📚
+       </div>
+       <h3 class="card-title">Teks Bacaan</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Teks bacaan akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-text-block">
+          Teks bacaan tentang makanan...
+         </div>
+         <div class="placeholder-text-block">
+          Cerita tentang minuman favorit...
+         </div>
+         <div class="placeholder-text-block">
+          Tradisi makanan Arab...
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card material-card">
+      <div class="card-header">
+       <div class="card-icon">
+        📝
+       </div>
+       <h3 class="card-title">Materi Qowaid (Tata Bahasa)</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Materi qowaid akan ditambahkan manual di Notepad++.)</p>
+        <div class="content-placeholder">
+         <div class="placeholder-text-block">
+          Struktur kalimat tentang makanan...
+         </div>
+         <div class="placeholder-text-block">
+          Penggunaan kata sifat rasa...
+         </div>
+         <div class="placeholder-text-block">
+          Pola kalimat preferensi makanan...
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card exercise-card">
+      <div class="card-header">
+       <div class="card-icon">
+        ✏️
+       </div>
+       <h3 class="card-title">Soal / Latihan</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Soal latihan akan ditambahkan manual di Notepad++.)</p>
+        <div class="exercise-placeholder">
+         <div class="exercise-item">
+          Soal 1: ___________
+         </div>
+         <div class="exercise-item">
+          Soal 2: ___________
+         </div>
+         <div class="exercise-item">
+          Soal 3: ___________
+         </div>
+         <div class="exercise-item">
+          Soal 4: ___________
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="chapter-navigation"><button class="nav-button back-to-chapters" onclick="backToChapters6()"> <span>⬅️</span> <span>Kembali ke Menu Bab</span> </button> <button class="nav-button back-to-main" onclick="backToMain6()"> <span>🏠</span> <span>Kembali ke Main Menu</span> </button>
+    </div>
+    <div class="chapter-footer">
+     <div class="group-label">
+      Kelompok 9
+     </div>
+     <div class="footer-note">
+      Semua konten (Mufrodat, Audio, Teks Bacaan, Materi Qowaid, Soal) akan diisi manual.
+     </div>
+    </div>
+   </div>
+   <div class="chapter-content" id="chapter7">
+    <div class="chapter-header">
+     <h1 class="chapter-main-title">باب ٧ – الامتحان</h1>
+     <p class="chapter-subtitle">Bab 7 – Evaluasi</p>
+     <div class="chapter-note-space">
+      <div class="placeholder-note">
+       (Ruang untuk catatan digital tambahan)
+      </div>
+     </div>
+    </div>
+    <div class="content-sections">
+     <div class="content-card material-card">
+      <div class="card-header">
+       <div class="card-icon">
+        🔗
+       </div>
+       <h3 class="card-title">Link Evaluasi 1</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Link akan ditambahkan manual di Notepad++.)</p>
+        <div class="link-placeholder">
+         <div class="link-box">
+          <div class="link-icon">
+           📄
+          </div>
+          <div class="link-text">
+           Evaluasi Bab 1-2
+          </div>
+          <div class="link-description">
+           Link evaluasi untuk bab perkenalan dan keluarga
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card vocabulary-card">
+      <div class="card-header">
+       <div class="card-icon">
+        🔗
+       </div>
+       <h3 class="card-title">Link Evaluasi 2</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Link akan ditambahkan manual di Notepad++.)</p>
+        <div class="link-placeholder">
+         <div class="link-box">
+          <div class="link-icon">
+           📄
+          </div>
+          <div class="link-text">
+           Evaluasi Bab 3-4
+          </div>
+          <div class="link-description">
+           Link evaluasi untuk bab sekolah dan kehidupan sehari-hari
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card conversation-card">
+      <div class="card-header">
+       <div class="card-icon">
+        🔗
+       </div>
+       <h3 class="card-title">Link Evaluasi 3</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Link akan ditambahkan manual di Notepad++.)</p>
+        <div class="link-placeholder">
+         <div class="link-box">
+          <div class="link-icon">
+           📄
+          </div>
+          <div class="link-text">
+           Evaluasi Bab 5-6
+          </div>
+          <div class="link-description">
+           Link evaluasi untuk bab hobi dan makanan-minuman
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card exercise-card">
+      <div class="card-header">
+       <div class="card-icon">
+        🔗
+       </div>
+       <h3 class="card-title">Link Evaluasi 4</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Link akan ditambahkan manual di Notepad++.)</p>
+        <div class="link-placeholder">
+         <div class="link-box">
+          <div class="link-icon">
+           📊
+          </div>
+          <div class="link-text">
+           Evaluasi Komprehensif
+          </div>
+          <div class="link-description">
+           Link evaluasi menyeluruh semua bab pembelajaran
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="content-card audio-card">
+      <div class="card-header">
+       <div class="card-icon">
+        🔗
+       </div>
+       <h3 class="card-title">Link Evaluasi 5</h3>
+      </div>
+      <div class="card-content">
+       <div class="placeholder-content">
+        <p>(Link akan ditambahkan manual di Notepad++.)</p>
+        <div class="link-placeholder">
+         <div class="link-box">
+          <div class="link-icon">
+           🎯
+          </div>
+          <div class="link-text">
+           Materi Tambahan
+          </div>
+          <div class="link-description">
+           Link ke sumber belajar dan referensi tambahan
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="chapter-navigation"><button class="nav-button back-to-chapters" onclick="backToChapters7()"> <span>⬅️</span> <span>Kembali ke Menu Bab</span> </button> <button class="nav-button back-to-main" onclick="backToMain7()"> <span>🏠</span> <span>Kembali ke Main Menu</span> </button>
+    </div>
+    <div class="chapter-footer">
+     <div class="group-label">
+      Kelompok 9
+     </div>
+     <div class="footer-note">
+      Semua kolom link akan diisi manual di Notepad++.
+     </div>
+    </div>
+   </div>
+  </main>
+  <script>
+        const defaultConfig = {
+            app_title_arabic: "تعلم العربية بسهولة",
+            app_title_indonesian: "Belajar Bahasa Arab dengan Mudah",
+            start_button_text: "Mulai Belajar",
+            exit_button_text: "Keluar",
+            group_text: "Kelompok 9",
+            footer_text: "Didesain untuk pembelajaran Bahasa Arab interaktif MA."
+        };
+
+        async function onConfigChange(config) {
+            document.getElementById('appTitleArabic').textContent = config.app_title_arabic || defaultConfig.app_title_arabic;
+            document.getElementById('appTitleIndonesian').textContent = config.app_title_indonesian || defaultConfig.app_title_indonesian;
+            document.getElementById('startButtonText').textContent = config.start_button_text || defaultConfig.start_button_text;
+            document.getElementById('exitButtonText').textContent = config.exit_button_text || defaultConfig.exit_button_text;
+            document.getElementById('groupText').textContent = config.group_text || defaultConfig.group_text;
+            document.getElementById('footerText').textContent = config.footer_text || defaultConfig.footer_text;
+        }
+
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            };
+        }
+
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["app_title_arabic", config.app_title_arabic || defaultConfig.app_title_arabic],
+                ["app_title_indonesian", config.app_title_indonesian || defaultConfig.app_title_indonesian],
+                ["start_button_text", config.start_button_text || defaultConfig.start_button_text],
+                ["exit_button_text", config.exit_button_text || defaultConfig.exit_button_text],
+                ["group_text", config.group_text || defaultConfig.group_text],
+                ["footer_text", config.footer_text || defaultConfig.footer_text]
+            ]);
+        }
+
+        // Navigation functionality
+        document.getElementById('startButton').addEventListener('click', function() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'block';
+        });
+
+        document.getElementById('backButton').addEventListener('click', function() {
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'block';
+        });
+
+        document.getElementById('exitButton').addEventListener('click', function() {
+            const exitMessage = document.createElement('div');
+            exitMessage.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                text-align: center;
+                z-index: 1000;
+                border: 2px solid #ef4444;
+            `;
+            exitMessage.innerHTML = `
+                <h3 style="color: #ef4444; margin-bottom: 15px;">Terima kasih!</h3>
+                <p style="color: #6b7280; margin-bottom: 20px;">Sampai jumpa di pembelajaran berikutnya.</p>
+                <button onclick="this.parentElement.remove()" style="
+                    background: #ef4444;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                ">Tutup</button>
+            `;
+            document.body.appendChild(exitMessage);
+        });
+
+        // Chapter navigation functions
+        function showChapter1() {
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('chapter1').style.display = 'block';
+        }
+
+        function showChapter2() {
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('chapter2').style.display = 'block';
+        }
+
+        function showChapter3() {
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('chapter3').style.display = 'block';
+        }
+
+        function showChapter4() {
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('chapter4').style.display = 'block';
+        }
+
+        function showChapter5() {
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('chapter5').style.display = 'block';
+        }
+
+        function showChapter6() {
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('chapter6').style.display = 'block';
+        }
+
+        function showChapter7() {
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('chapter7').style.display = 'block';
+        }
+
+        function backToChapters() {
+            document.getElementById('chapter1').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'block';
+        }
+
+        function backToChapters2() {
+            document.getElementById('chapter2').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'block';
+        }
+
+        function backToChapters3() {
+            document.getElementById('chapter3').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'block';
+        }
+
+        function backToChapters4() {
+            document.getElementById('chapter4').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'block';
+        }
+
+        function backToChapters5() {
+            document.getElementById('chapter5').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'block';
+        }
+
+        function backToChapters6() {
+            document.getElementById('chapter6').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'block';
+        }
+
+        function backToMain() {
+            document.getElementById('chapter1').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'block';
+        }
+
+        function backToMain2() {
+            document.getElementById('chapter2').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'block';
+        }
+
+        function backToMain3() {
+            document.getElementById('chapter3').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'block';
+        }
+
+        function backToMain4() {
+            document.getElementById('chapter4').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'block';
+        }
+
+        function backToMain5() {
+            document.getElementById('chapter5').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'block';
+        }
+
+        function backToMain6() {
+            document.getElementById('chapter6').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'block';
+        }
+
+        function backToChapters7() {
+            document.getElementById('chapter7').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'block';
+        }
+
+        function backToMain7() {
+            document.getElementById('chapter7').style.display = 'none';
+            document.getElementById('chapterMenu').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'block';
+        }
+
+        // Add hover effects to other chapter cards
+        document.querySelectorAll('.chapter-card:not(.ch1):not(.ch2):not(.ch3):not(.ch4):not(.ch5):not(.ch6):not(.ch7)').forEach(card => {
+            card.addEventListener('click', function() {
+                const chapterName = this.querySelector('.chapter-name').textContent;
+                const message = document.createElement('div');
+                message.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: white;
+                    padding: 30px;
+                    border-radius: 12px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                    text-align: center;
+                    z-index: 1000;
+                    border: 2px solid #3b82f6;
+                `;
+                message.innerHTML = `
+                    <h3 style="color: #3b82f6; margin-bottom: 15px;">Bab: ${chapterName}</h3>
+                    <p style="color: #6b7280; margin-bottom: 20px;">Konten bab akan diisi manual di Notepad++</p>
+                    <button onclick="this.parentElement.remove()" style="
+                        background: #3b82f6;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                    ">Tutup</button>
+                `;
+                document.body.appendChild(message);
+            });
+        });
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99f7a88ff3845fec',t:'MTc2MzMwMzEzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
